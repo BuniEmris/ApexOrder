@@ -1,0 +1,38 @@
+diff --git a/node_modules/react-native-step-indicator/src/index.tsx b/node_modules/react-native-step-indicator/src/index.tsx
+index 222aeb6..6c3520b 100644
+--- a/node_modules/react-native-step-indicator/src/index.tsx
++++ b/node_modules/react-native-step-indicator/src/index.tsx
+@@ -144,7 +144,7 @@ const StepIndicator = ({
+     } else {
+       progressBarBackgroundStyle = {
+         ...progressBarBackgroundStyle,
+-        top: (height - customStyles.separatorStrokeWidth) / 2,
++        bottom: (height - customStyles.separatorStrokeWidth) / 2,
+         left: width / (2 * stepCount),
+         right: width / (2 * stepCount),
+         height:
+@@ -187,7 +187,7 @@ const StepIndicator = ({
+     } else {
+       progressBarStyle = {
+         ...progressBarStyle,
+-        top: (height - customStyles.separatorStrokeWidth) / 2,
++        bottom: (height - customStyles.separatorStrokeWidth) / 2,
+         left: width / (2 * stepCount),
+         right: width / (2 * stepCount),
+         height:
+@@ -424,6 +424,7 @@ const StepIndicator = ({
+           : { flexDirection: 'column' },
+       ]}
+     >
++      {labels && renderStepLabels()}
+       {width !== 0 && (
+         <React.Fragment>
+           {renderProgressBarBackground()}
+@@ -431,7 +432,6 @@ const StepIndicator = ({
+         </React.Fragment>
+       )}
+       {renderStepIndicator()}
+-      {labels && renderStepLabels()}
+     </View>
+   );
+ };
