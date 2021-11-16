@@ -25,7 +25,7 @@ export default memo(function AcceptFooter({
       <TouchableOpacity
         disabled={loading}
         onPress={onPress}
-        style={[styles.acceptBtn, fixed && { height: 60 }]}>
+        style={[styles.acceptBtn, fixed && { height: 50 }]}>
         {loading ? (
           <LoadingIndicator colorWhite IndicatorStyle={styles.indicator} />
         ) : (

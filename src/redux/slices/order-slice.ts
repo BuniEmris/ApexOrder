@@ -32,6 +32,9 @@ interface IState {
   selectedStructure: ILocations | null;
   orderType: 'false' | 'true';
   paymentType: string;
+  sauces: any[];
+  upsales: any[];
+  currentOrders: any[];
 }
 
 const initialState: IState = {
@@ -41,6 +44,8 @@ const initialState: IState = {
   orderDate: moment().format(),
   orderType: 'false',
   paymentType: '',
+  sauces: [],
+  currentOrders: [],
 };
 
 export const orderSlice = createSlice({
@@ -81,6 +86,52 @@ export const orderSlice = createSlice({
         });
       }
     },
+    incrementSauce: (state, { payload }: PayloadAction<number>) => {
+      state.sauces = state.sauces.map((el, idx) => {
+        if (idx === payload) {
+          return { ...el, Amount: el.Amount + 1 };
+        }
+        return el;
+      });
+    },
+    decrementSauce: (state, { payload }: PayloadAction<number>) => {
+      const search = state.sauces.find((_, idx) => idx === payload);
+
+      if (search?.Amount !== 0) {
+        state.sauces = state.sauces.map((el, idx) => {
+          if (idx === payload) {
+            return { ...el, Amount: el.Amount - 1 };
+          }
+          return el;
+        });
+      }
+    },
+    setCurrentOrders: (state, { payload }: PayloadAction<any>) => {
+      state.currentOrders = payload?.filter(el => !el?.Ready);
+    },
+
+    setSaucesList: (state, { payload }: PayloadAction<any[]>) => {
+      state.sauces = payload.map((el: any) => {
+        return { ...el, Amount: 0 };
+      });
+    },
+    setUpsaleList: (state, { payload }: PayloadAction<any[]>) => {
+      state.upsales = payload.map((el: any) => {
+        return { ...el, selected: false };
+      });
+    },
+    pickUpsaleItem: (state, { payload }: PayloadAction<string>) => {
+      state.upsales = state.upsales.map((el: any) => {
+        if (el.uidNomenclature === payload) {
+          if (el.selected) {
+            return { ...el, selected: false };
+          } else {
+            return { ...el, selected: true };
+          }
+        }
+        return el;
+      });
+    },
     setAddress: (state, { payload }: PayloadAction<IAddress>) => {
       state.address = payload;
     },
@@ -107,9 +158,15 @@ const { actions, reducer } = orderSlice;
 export const {
   clearBasket,
   addToBasket,
+  setSaucesList,
+  setUpsaleList,
   incrementProduct,
   decrementProduct,
+  setCurrentOrders,
+  incrementSauce,
+  decrementSauce,
   setAddress,
+  pickUpsaleItem,
   setOrderDate,
   refreshOrderState,
   setOrderType,

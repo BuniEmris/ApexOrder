@@ -36,6 +36,7 @@
     "react-native-reanimated": "^2.2.1",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.4.0",
+    "react-native-simple-radio-button": "^2.7.4",
     "react-native-smooth-pincode-input": "^1.0.9",
     "react-native-step-indicator": "^1.0.3",
     "react-native-svg": "^12.1.1",

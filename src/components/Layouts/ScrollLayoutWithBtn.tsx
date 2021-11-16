@@ -32,6 +32,7 @@ export default function ScrollLayoutWithBtn({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     paddingBottom: 106,

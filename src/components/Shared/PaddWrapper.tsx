@@ -15,5 +15,6 @@ const styles = StyleSheet.create({
   wrapper: {
     paddingHorizontal: appStyles.HORIZONTAL_PADDING,
     width: '100%',
+    backgroundColor: 'white',
   },
 });

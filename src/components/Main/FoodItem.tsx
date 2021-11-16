@@ -11,7 +11,6 @@ type Props = {
 
 export default function FoodItem({ product }: Props) {
   const navigation = useNavigation<NavigationType>();
-  console.log(product, 'aaaaa');
   return (
     <TouchableOpacity
       style={styles.container}
@@ -19,7 +18,7 @@ export default function FoodItem({ product }: Props) {
         navigation.navigate('product', { UID: product.UIDProduct })
       }>
       <Image
-        source={{ uri: 'data:image/png;base64, ' + product.Image }}
+        source={{ uri: 'data:image/png;base64, ' + product?.Image }}
         style={styles.image}
       />
       <View style={styles.textContainer}>
@@ -44,8 +43,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   image: {
-    width: 140,
-    height: 140,
+    marginTop: 5,
+    width: 150,
+    height: 150,
   },
   textContainer: {
     flex: 1,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 124, 33, 0.2)',
+    backgroundColor: 'rgba(255, 124, 33, 0.15)',
     borderRadius: 100,
   },
   btnText: {

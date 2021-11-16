@@ -100,7 +100,6 @@ export default function BottomSheet({
     const currentDate =
       moment(selectedDate).format('YYYYMMDDHHmmss') || orderDate;
     dispatch(setOrderDate(currentDate));
-    console.log(orderDate, 'samavizovvvvvvv');
   };
 
   const selfOrder = orderType === 'true';

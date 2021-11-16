@@ -29,6 +29,12 @@ export interface ISauce {
   Name: string;
   Price: number;
 }
+export interface IUpsale {
+  UIDNomenclature: string;
+  Image: string;
+  Name: string;
+  Price: number;
+}
 
 export interface IPrice {
   price: number;

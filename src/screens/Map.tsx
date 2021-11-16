@@ -51,7 +51,7 @@ export default function Map({ navigation }: { navigation: NavigationType }) {
           }),
         );
       })
-      .catch((err: any) => console.log(err));
+      .catch((err: any) => Alert.alert(err));
   };
 
   useEffect(() => {

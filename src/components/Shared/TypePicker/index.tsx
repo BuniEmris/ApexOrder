@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import Item from './Item';
 
 // import waterImg from '../../../assets/image/categories/water.png';
@@ -7,11 +7,14 @@ import Item from './Item';
 // import dessertImg from '../../../assets/image/categories/dessert.png';
 import appStyles from '../../../constants/styles';
 import { IGroup, ISauce } from '../../../utils/types/api';
+import RadioItem from './RadioItem';
 
 type itemsType = IGroup[] | ISauce[] | string[] | undefined;
 
 type Props = {
   itemList: itemsType;
+  radio: boolean;
+
   setSelected: (val: string) => void;
   selected: string;
 };
@@ -24,21 +27,36 @@ export const checkAndGetItemUID = (item: IGroup | ISauce | string) => {
   return '';
 };
 
-export default function TypePicker({ itemList, selected, setSelected }: Props) {
+export default function TypePicker({
+  itemList,
+  radio,
+
+  selected,
+  setSelected,
+}: Props) {
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       style={styles.container}
       contentContainerStyle={styles.content}>
-      {itemList?.map((el, i) => (
-        <Item
-          key={i}
-          info={el}
-          active={checkAndGetItemUID(el) === selected}
-          setSelected={setSelected}
-        />
-      ))}
+      {radio
+        ? itemList?.map((el, i) => (
+            <RadioItem
+              key={i}
+              info={el}
+              active={checkAndGetItemUID(el) === selected}
+              setSelected={setSelected}
+            />
+          ))
+        : itemList?.map((el, i) => (
+            <Item
+              key={i}
+              info={el}
+              active={checkAndGetItemUID(el) === selected}
+              setSelected={setSelected}
+            />
+          ))}
     </ScrollView>
   );
 }
@@ -48,6 +66,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: appStyles.BACKGROUND_DEFAULT,
     paddingTop: 20,
+    paddingBottom: 20,
   },
   content: { paddingHorizontal: 15 },
 });

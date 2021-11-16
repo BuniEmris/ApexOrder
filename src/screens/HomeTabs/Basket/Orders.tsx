@@ -1,12 +1,11 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import MinusIcon from '../../../assets/icons/Minus';
 import PayIcon from '../../../assets/icons/Play';
 import PlusIcon from '../../../assets/icons/Plus';
 import BottomSheet from '../../../components/Basket/BottomSheetModal';
-import MyOrders from '../../../components/Basket/MyOrders';
 import ScrollLayoutWithBtn from '../../../components/Layouts/ScrollLayoutWithBtn';
 import PaddWrapper from '../../../components/Shared/PaddWrapper';
 import Row from '../../../components/Shared/Row';
@@ -19,12 +18,13 @@ import {
 } from '../../../redux/slices/order-slice';
 import { RootState } from '../../../redux/store';
 import { getResource, sendData } from '../../../utils/api';
-import moment from 'moment';
 import { NavigationType } from '../../../utils/types';
 import { setFromBasket } from '../../../redux/slices/auth-slice';
 import { IAdress } from '../Profile/Addresses';
 import { showMessage } from 'react-native-flash-message';
-import { NativeModules } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import SauceAdd from '../../../components/Basket/SauceAdd';
+import UpsaleItem from '../../../components/Shared/TypePicker/UpsaleItem';
 
 export default function Orders({
   navigation,
@@ -39,6 +39,8 @@ export default function Orders({
   const {
     products,
     address,
+    sauces,
+    upsales,
     orderDate,
     selectedStructure,
     orderType,
@@ -48,7 +50,6 @@ export default function Orders({
   const { phone, isSignedIn, name } = useSelector(
     (state: RootState) => state.auth,
   );
-
   const openBottomSheet = () => {
     if (isSignedIn) {
       bottomSheetModalRef.current?.present();
@@ -80,11 +81,18 @@ export default function Orders({
 
   const orderPrice = useMemo(() => {
     return (
-      products.reduce((acc, curr) => {
+      products?.reduce((acc, curr) => {
         return acc + curr.Amount * curr.Price;
-      }, 0) + 15000
+      }, 0) +
+      15000 +
+      sauces?.reduce((acc, curr) => {
+        return acc + curr.Amount * curr.Price;
+      }, 0) +
+      upsales?.reduce((acc, curr) => {
+        return curr.selected ? acc + curr.price : acc;
+      }, 0)
     );
-  }, [products]);
+  }, [products, sauces, upsales]);
 
   const order = async () => {
     if (!paymentType) {
@@ -122,8 +130,32 @@ export default function Orders({
       .then(() => {})
       .catch(() => {});
 
+    const goods = products
+      .concat(
+        sauces
+          .filter(el => el.Amount !== 0)
+          .map(el => ({
+            UIDProduct: el.UIDNomenclature,
+            Amount: el.Amount,
+            Price: el.Price,
+            Key: '',
+          })),
+      )
+      .concat(
+        upsales
+          .filter(el => el.selected)
+          .map(el => ({
+            ...el,
+            Amount: 1,
+            UIDProduct: el.uidNomenclature,
+            Price: el.price,
+            Key: '',
+          })),
+      );
+    console.log(goods, 'goodsUPSALEEEEEEEE111');
+
     const orderBody = {
-      Goods: products,
+      Goods: goods,
       UIDPayment: paymentType,
       Pickup: orderType,
       Address: address,
@@ -132,18 +164,16 @@ export default function Orders({
       // PickupTime: moment(orderDate).format('YYYYMMDDHHmmss'),
       UIDStructure: selectedStructure?.UIDStructure,
     };
-    console.log(orderBody, 'bodyy order');
-
     sendData('orders', orderBody)
       .then(res => {
         closeBottomSheet();
         dispatch(refreshOrderState());
-        navigation.navigate('basket', {
+        navigation.navigate('OrderTab', {
           screen: 'order',
           params: { UID: res?.result },
         });
       })
-      .catch(err => console.log(err.message));
+      .catch(err => Alert.alert(err.message));
   };
 
   return (
@@ -160,7 +190,7 @@ export default function Orders({
         }>
         <PaddWrapper>
           <View style={styles.container}>
-            <MyOrders />
+            {/* <MyOrders /> */}
 
             <Row containerStyle={styles.header}>
               <Text style={styles.title}>Корзина</Text>
@@ -181,12 +211,14 @@ export default function Orders({
                       </View>
                       <View style={styles.itemActions}>
                         <MinusIcon
+                          color="#F0F0F4"
                           onPress={() => dispatch(decrementProduct(i))}
                         />
                         <Text style={styles.itemActionsNumber}>
                           {el.Amount}
                         </Text>
                         <PlusIcon
+                          color="#F0F0F4"
                           onPress={() => dispatch(incrementProduct(i))}
                         />
                       </View>
@@ -202,6 +234,18 @@ export default function Orders({
             )}
           </View>
         </PaddWrapper>
+
+        <View style={styles.upsaleContainer}>
+          <Text style={styles.addItemHeader}>Добавить к заказу?</Text>
+          <ScrollView
+            style={{ paddingLeft: 10 }}
+            horizontal
+            showsHorizontalScrollIndicator={false}>
+            <UpsaleItem />
+          </ScrollView>
+        </View>
+
+        {!!products.length && <SauceAdd />}
       </ScrollLayoutWithBtn>
       <BottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
@@ -238,8 +282,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: 10,
   },
+  addItemHeader: {
+    fontFamily: appStyles.FONT,
+    fontWeight: '500',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#1E1B26',
+    marginVertical: 12,
+    marginHorizontal: 20,
+  },
   item: {
     marginVertical: 10,
+    // borderBottomColor: '#F0F0F4',
+    // borderBottomWidth: 10,
   },
   itemImage: {
     width: 80,
@@ -250,8 +305,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   itemActions: {
+    width: 96,
+    height: 32,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0F0F4',
+    borderRadius: 100,
+  },
+  upsaleContainer: {
+    width: '100%',
+    backgroundColor: '#F0F0F4',
+    paddingBottom: 10,
   },
   itemActionsNumber: {
     marginHorizontal: 10,

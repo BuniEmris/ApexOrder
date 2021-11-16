@@ -38,10 +38,32 @@ export default function Home() {
     },
     { enabled: !!selectedGroup },
   );
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }) => {
+    const paddingToBottom = 20;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
+      // onScroll={({ nativeEvent }) => {
+      //   const selectedScrollIndex = groups?.findIndex(
+      //     el => el.UIDGroup === selectedGroup,
+      //   );
+      //   if (isCloseToBottom(nativeEvent)) {
+      //     if (selectedScrollIndex !== groups?.length - 1) {
+      //       setSelectedGroup(groups[selectedScrollIndex + 1]?.UIDGroup);
+      //     }
+      //   }
+      // }}
+      scrollEventThrottle={400}
       contentInsetAdjustmentBehavior="automatic"
       stickyHeaderIndices={[2]}>
       <Header />
@@ -56,14 +78,16 @@ export default function Home() {
         </QueryWrapper>
         <Divider />
       </>
+
       <QueryWrapper
         isLoading={productsLoading}
         IndicatorStyle={{ marginTop: 50 }}
         isError={productsIsError}
         indicatorSize="large">
-        {products?.map((product, i) => (
-          <FoodItem key={i} product={product} />
-        ))}
+        {products?.map(product => {
+          return <FoodItem key={product.UIDProduct} product={product} />;
+        })}
+        {/* </ScrollView> */}
       </QueryWrapper>
     </ScrollView>
   );

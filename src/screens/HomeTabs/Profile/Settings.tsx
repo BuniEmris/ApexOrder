@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import LogOutIcon from '../../../assets/icons/profile/LogOut';
 import AnimatedInput from '../../../components/Profile/AnimatedInput';
@@ -37,7 +37,7 @@ export default function Settings({
         dispatch(setPhone(newPhone));
       })
       .then(() => navigation.navigate('profile', { screen: 'user' }))
-      .catch(err => console.log(err));
+      .catch(err => Alert.alert(err));
   };
 
   return (

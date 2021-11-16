@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     width: width,
     paddingHorizontal: RW(appStyles.HORIZONTAL_PADDING),
     backgroundColor: appStyles.BACKGROUND_DEFAULT,
+    borderRadius: 20,
   },
-  img: { width: '100%', borderRadius: RH(20) },
+  img: { width: '100%' },
 });

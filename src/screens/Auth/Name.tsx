@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import appStyles from '../../constants/styles';
 import {
@@ -24,8 +24,6 @@ export default function Name({ navigation }: PhoneComponentProps) {
 
   const handlePrevStep = () => navigation.goBack();
 
-  console.log(fromBasket);
-
   const endingAuthorization = () => {
     const body = {
       name,
@@ -46,7 +44,7 @@ export default function Name({ navigation }: PhoneComponentProps) {
           navigation.navigate('home');
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => Alert.alert(err));
   };
 
   return (

@@ -8,8 +8,10 @@ import PaddWrapper from '../components/Shared/PaddWrapper';
 import PreviewPhoto from '../components/Shared/PreviewPhoto';
 import QueryWrapper from '../components/Shared/QueryWrapper';
 import TypePicker from '../components/Shared/TypePicker';
+import UpsaleItem from '../components/Shared/TypePicker/UpsaleItem';
 import appStyles from '../constants/styles';
 import { addToBasket } from '../redux/slices/order-slice';
+
 import { getResource } from '../utils/api';
 import { NavigationType } from '../utils/types';
 import { IProduct } from '../utils/types/api';
@@ -23,7 +25,6 @@ export default function Product({ route, navigation }: Props) {
   const dispatch = useDispatch();
   const { UID } = route.params;
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedSauce, setSelectedSauce] = useState('');
   const [selectedAdditive, setSelectedAdditive] = useState('');
   const [selectedVariantUID, setSelectedVariantUID] = useState('');
 
@@ -41,9 +42,9 @@ export default function Product({ route, navigation }: Props) {
   useEffect(() => {
     if (data) {
       if (!data?.isPizza) {
-        setSelectedVariantUID(data?.productInfo?.Variants[0]?.UIDNomenclature);
+        setSelectedVariantUID(data?.productInfo?.Variants[1]?.UIDNomenclature);
       } else {
-        setSelectedSize(data?.productInfo?.Sizes[0] || '');
+        setSelectedSize(data?.productInfo?.Sizes[1] || '');
       }
     }
   }, [data]);
@@ -61,13 +62,13 @@ export default function Product({ route, navigation }: Props) {
     const sizeToNumber = (sizeName: string) => {
       switch (sizeName) {
         case 'Маленькая':
-          return '25 см';
+          return 'Маленькая';
         case 'Средняя':
-          return '30 см';
+          return 'Средняя';
         case 'Большая':
-          return '35 см';
+          return 'Большая';
         default:
-          return '25 см';
+          return 'Средняя';
       }
     };
 
@@ -84,7 +85,7 @@ export default function Product({ route, navigation }: Props) {
   const Price = useMemo(() => {
     if (data?.isPizza) {
       const search = data?.productInfo?.Prices?.find(
-        el => el.label === `${selectedSize}&%&${selectedAdditive}`,
+        el => el.label === `${selectedSize}&${selectedAdditive}`,
       );
       return search?.price || 0;
     } else {
@@ -100,18 +101,18 @@ export default function Product({ route, navigation }: Props) {
     else setSelectedAdditive(val);
   };
 
-  const addSouse = (val: string) => {
-    setSelectedSauce(val);
-    // const getSause = data?.productInfo?.Sauces.find(
-    //   el => el.UIDNomenclature === val,
-    // );
-  };
+  // const addSouse = (val: string) => {
+  //   setSelectedSauce(val);
+  //   // const getSause = data?.productInfo?.Sauces.find(
+  //   //   el => el.UIDNomenclature === val,
+  //   // );
+  // };
 
   const addingToBasket = () => {
     dispatch(
       addToBasket({
         Amount: 1,
-        Key: data?.isPizza ? `${selectedSize}&%&${selectedAdditive}` : '',
+        Key: data?.isPizza ? `${selectedSize}&${selectedAdditive}` : '',
         Price: Price,
         Image: data?.productInfo?.Image,
         UIDProduct: data?.isPizza
@@ -145,38 +146,37 @@ export default function Product({ route, navigation }: Props) {
           {data?.isPizza ? (
             <>
               <PaddWrapper>
-                {sizeOptions?.length > 1 && (
+                {sizeOptions?.length > 1 && sizeOptions && (
                   <MySwitchSelector
                     options={sizeOptions}
                     selectFunc={setSelectedSize}
                     switchStyle={styles.select}
                     value={selectedSize}
+                    buttonStyle={styles.buttonTextStyle}
                   />
                 )}
-
-                <Text style={styles.saucesLabel}>Добавка к пицце</Text>
               </PaddWrapper>
+
               <TypePicker
                 itemList={data?.productInfo?.Additives}
                 selected={selectedAdditive}
                 setSelected={handleAdditive}
+                radio
               />
+
               <PaddWrapper>
-                <Text style={styles.saucesLabel}>Соусы</Text>
+                <Text style={styles.saucesLabel}>Добавить к пицце </Text>
+                <UpsaleItem cartUpsale />
               </PaddWrapper>
-              <TypePicker
-                itemList={data?.productInfo?.Sauces}
-                selected={selectedSauce}
-                setSelected={addSouse}
-              />
             </>
           ) : (
             <PaddWrapper>
-              {variantOptions?.length > 1 && (
+              {variantOptions?.length > 1 && variantOptions && (
                 <MySwitchSelector
                   options={variantOptions}
                   selectFunc={setSelectedVariantUID}
                   switchStyle={styles.select}
+                  buttonselected={styles.buttonTextStyle}
                   value={selectedVariantUID}
                   byLabel
                 />
@@ -205,13 +205,20 @@ const styles = StyleSheet.create({
     color: appStyles.FONT_COLOR_SECONDARY,
     fontSize: 16,
     lineHeight: 19,
-    width: 217,
+    // width: 217,
   },
-  select: { marginTop: 20 },
-  saucesLabel: {
+  select: {
     marginTop: 20,
+  },
+  buttonTextStyle: {
+    fontFamily: appStyles.FONT,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  saucesLabel: {
     fontFamily: appStyles.FONT,
     fontSize: 16,
-    color: appStyles.FONT_COLOR,
+    fontWeight: 'normal',
+    color: '#1E1B26',
   },
 });

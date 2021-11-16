@@ -8,7 +8,9 @@ import { NavigationType } from '../../utils/types';
 export default memo(function BackBtn({ fixed = true }: { fixed?: boolean }) {
   const navigation = useNavigation<NavigationType>();
 
-  const goBack = () => navigation.goBack();
+  const goBack = () => {
+    navigation.goBack();
+  };
 
   return (
     <TouchableOpacity
@@ -28,12 +30,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     borderRadius: 50,
-    shadowColor: 'rgba(30, 27, 38, 0.04)',
+    shadowColor: 'rgba(30, 27, 38, 0.2)',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowRadius: 10,
+    shadowRadius: 2,
     shadowOpacity: 1,
     elevation: 1,
   },
